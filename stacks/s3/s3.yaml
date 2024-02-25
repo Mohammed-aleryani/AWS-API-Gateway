@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This is an s3 created for second project"
+Parameters:
+  BucketName:
+    Type: String
+    
+
+Resources:
+  S3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+
+Outputs:
+  S3:
+    Value: !Ref S3
