@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This is an dynamodb table created for second project"
+Parameters:
+  TableName:
+    Type: String
+Resources:
+  Dynamodb:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: customerId
+        AttributeType: 'S'
+      KeySchema:
+      - AttributeName: customerId
+        KeyType: HASH
+      TableName: !Ref TableName
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
