@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: "This is a s3 tirgger a function when an object is uploaded"
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://eryani-functions/writeToDynamodb/main.zip
+      FunctionName: wirteToDyanmodb
+      Handler: main.lambda_handler
+      Role: !ImportValue lambdas-role-Role
+      Runtime: python3.12
+      Events:
+        S3Bucket:
+          Type: S3
+          Properties:
+            Bucket: !Ref S3
+            Events: 's3:ObjectCreated:*'
+
+  S3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: customers-1996
+
+  AllowS3ToCallLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref Function
+      Principal: s3.amazonaws.com
+      SourceArn: !GetAtt S3.Arn
+
+Outputs:
+  S3:
+    Value: !Ref S3
+    Export:
+      Name: !Sub "${AWS::StackName}-Bucket"
