@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This is the role template created for the second project"
+Resources:
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+        - Effect: "Allow"
+          Principal:
+            Service: "lambda.amazonaws.com"
+          Action: "sts:AssumeRole"
+
+      Description: "Give lambdas S3 and DynamoDB full access and LambdaBasicExecutionRole"
+      ManagedPolicyArns:
+      - "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+      - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+      - "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      - "arn:aws:iam::905418461969:policy/service-role/AWSLambdaMicroserviceExecutionRole-a6050eea-3dfc-4b80-8a7a-9441a1d2907f"
+      - "arn:aws:iam::905418461969:policy/service-role/AWSLambdaBasicExecutionRole-69f76181-5cde-4c71-8b52-3dace7ccaacc"
+      RoleName: "secondProject"
+Outputs:
+  lambdasRole:
+    Description: "ARN of the IAM Role for lambdas"
+    Value: !GetAtt Role.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-Role"
+
