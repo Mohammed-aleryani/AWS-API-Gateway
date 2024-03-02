@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: "Lambda function triggered by DynamoDB events"
+
+Resources:
+  DynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: customer_id
+        AttributeType: 'S'
+      KeySchema:
+      - AttributeName: customer_id
+        KeyType: HASH
+      TableName: customers
+      TimeToLiveSpecification:
+        AttributeName: expiration_time
+        Enabled: TRUE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+
+
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !ImportValue lambdas-role-Role
+      CodeUri: s3://eryani-functions/writeToS3/main.zip
+      Handler: main.lambda_handler
+      Runtime: python3.8
+      Events:
+        DynamoDBEvent:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt DynamoDBTable.StreamArn
+            StartingPosition: TRIM_HORIZON
+
+Outputs:
+  DynamoDBTableName:
+    Value: !Ref DynamoDBTable
+    Description: "Name of the DynamoDB table"
